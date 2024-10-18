@@ -15,7 +15,15 @@ db_connection = MongoDBConnection(uri,my_db)
 # Initialisation des contrôleurs
 revenue_controller = RevenueController(db_connection)
 report_controller = ReportController(db_connection)
+role_controller = RoleController(db_connection)
 # Ajoutez ici les autres contrôleurs si nécessaire.
+
+### CRUD POUR REVENUE ###
+@app.route('/role', methods=['POST'])
+def add_role():
+    data = request.json
+    role_controller.add(data)
+    return jsonify({"message": "Role ajouté avec succès"}), 201
 
 ### CRUD POUR REVENUE ###
 @app.route('/revenues', methods=['POST'])
