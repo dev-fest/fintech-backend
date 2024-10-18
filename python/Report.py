@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from period import Period
-from user import User
+from Period import Period
+from User import User
 
 class Report(BaseModel):
     report_id: int = Field(..., ge=1, description="L'ID du rapport doit être un entier positif.")

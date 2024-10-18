@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, validator
 from datetime import datetime
-from user import User  # Association avec User
+from User import User  # Association avec User
 
 class Notification(BaseModel):
     notification_id: int = Field(..., ge=1, description="L'ID de la notification doit être un entier positif.")
