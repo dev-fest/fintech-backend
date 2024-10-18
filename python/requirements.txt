@@ -1,0 +1,7 @@
+Flask
+gunicorn
+pymongo==4.5.0
+websockets==11.0.3
+asyncio
+threading
+abc
