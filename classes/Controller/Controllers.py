@@ -69,7 +69,6 @@ class RoleController(BaseController):
     def __init__(self, db_connection):
         super().__init__(db_connection, "roles")
 
-
     def search(self, **kwargs):
         roles_data = self.collection.find(kwargs)
         return [Role(role['role_id'], role['role_name']) for role in roles_data]

@@ -18,8 +18,8 @@ report_controller = ReportController(db_connection)
 role_controller = RoleController(db_connection)
 # Ajoutez ici les autres contrôleurs si nécessaire.
 
-### CRUD POUR REVENUE ###
-@app.route('/role', methods=['POST'])
+### CRUD POUR ROLE ###
+@app.route('/roles', methods=['POST'])
 def add_role():
     data = request.json
     role_controller.add(data)
@@ -48,7 +48,6 @@ def search_revenues():
     criteria = request.args.to_dict()
     results = revenue_controller.search(**criteria)
     return jsonify(results), 200
-
 
 ### CRUD POUR REPORT ###
 @app.route('/reports', methods=['POST'])
