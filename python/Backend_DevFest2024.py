@@ -1,17 +1,9 @@
 from Mongodb_class.Mongo_connect import MongoDBConnection
+from classes.Controller.Controllers import UserController
+from classes.Controller.observer import ConcreteObserver
 
 
-
-# Exemple d'utilisation
-if __name__ == "__main__":
-    # Remplacez par vos informations d'identification et votre URI MongoDB
-    username = "your_username"
-    password = "your_password"
-    host = "localhost"
-    port = "27017"
-    database_name = "mydatabase"
-    mongo_uri = f"mongodb://{username}:{password}@{host}:{port}/{database_name}"
-
+def connect(mongo_uri, database_name) :
     mongo_connection = MongoDBConnection(mongo_uri, database_name)
 
     # Utilisation des contrôleurs
@@ -35,3 +27,20 @@ if __name__ == "__main__":
 
     # Fermer la connexion
     mongo_connection.close_connection()
+
+
+
+
+# Ajout d’un observateur
+observer = ConcreteObserver()
+user_controller.add_observer(observer)
+
+# Ajout d’un utilisateur
+new_user = User("u001", "John", "Doe", "john.doe@example.com", "hashed_password", "role_id_1")
+user_controller.add(new_user)
+
+# Modification d’un utilisateur
+user_controller.update("u001", {"first_name": "Johnny"})
+
+# Suppression d’un utilisateur
+user_controller.delete("u001")
