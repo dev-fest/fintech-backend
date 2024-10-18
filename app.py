@@ -8,7 +8,9 @@ from classes.Controller.Controllers import (
 
 # Initialisation de Flask et de MongoDB
 app = Flask(__name__)
-db_connection = MongoDBConnection()
+uri = "mongodb+srv://greylanisteur123:CWihvdE3IHnEV3eK@cluster0.i4xu4.mongodb.net/"
+my_db = "cluster0"
+db_connection = MongoDBConnection(uri,my_db)
 
 # Initialisation des contrôleurs
 revenue_controller = RevenueController(db_connection)
@@ -71,4 +73,4 @@ def search_reports():
 # - @app.route('/budgets/<budget_id>', methods=['PUT'])
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=False)

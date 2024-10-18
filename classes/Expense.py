@@ -1,8 +1,8 @@
 from pydantic import BaseModel, Field, validator
 from datetime import date
-from Category import Category
-from Project import Project
-from User import User
+from classes.Category import Category
+from classes.Project import Project
+from classes.User import User
 
 class Expense(BaseModel):
     expense_id: int = Field(..., ge=1, description="L'ID de la dépense doit être un entier positif.")

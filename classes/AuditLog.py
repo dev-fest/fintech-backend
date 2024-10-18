@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field
 from datetime import datetime
-from User import User
+from classes.User import User
 
 class AuditLog(BaseModel):
     log_id: int = Field(..., ge=1, description="L'ID du log doit être un entier positif.")

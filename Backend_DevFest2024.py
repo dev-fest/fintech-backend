@@ -1,7 +1,8 @@
 from Mongodb_class.Mongo_connect import MongoDBConnection
 from classes.Controller.Controllers import RoleController, UserController, AuditLogController, BudgetController, CategoryController, PeriodController, NotificationController, ExpenseController, ReportController, KPIController, ProjectController, RevenueController
 from classes.Controller.observer import ConcreteObserver
-from classes import Role, User, AuditLog, Budget, Category, Period, Notification, Expense, Report, KPI, Project, Revenue
+from classes.Report import Report
+from classes.Revenue import Revenue
 
 # Assurez-vous de remplacer "your_module_name" et "your_model_module" par les noms réels de vos modules.
 

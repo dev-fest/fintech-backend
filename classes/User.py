@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, EmailStr, validator, ValidationError
 from typing import Optional
 import re
-from Role import Role
+from classes.Role import Role
 
 
 class User(BaseModel):

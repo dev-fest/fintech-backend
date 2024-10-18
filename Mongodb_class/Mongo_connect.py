@@ -17,3 +17,5 @@ class MongoDBConnection:
     def get_collection(self, collection_name):
         """Récupère une collection de la base de données."""
         return self.db[collection_name]
+
+

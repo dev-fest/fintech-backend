@@ -1,12 +1,12 @@
 from pydantic import BaseModel, Field, validator
 from datetime import datetime
-from User import User  # Association avec User
+from classes.User import User  # Association avec User
 
 class Notification(BaseModel):
     notification_id: int = Field(..., ge=1, description="L'ID de la notification doit être un entier positif.")
     user: User  # Association avec la classe User
     message: str = Field(..., min_length=1, description="Le message ne peut pas être vide.")
-    status: str = Field(..., regex='^(unread|read)$', description="Le statut doit être 'unread' ou 'read'.")
+    status: str = Field(..., pattern='^(unread|read)$', description="Le statut doit être 'unread' ou 'read'.")
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     # Validation personnalisée pour le statut

@@ -1,7 +1,7 @@
 from pydantic import BaseModel, Field, validator
 from datetime import date
-from Period import Period
-from User import User
+from classes.Period import Period
+from classes.User import User
 
 class Revenue(BaseModel):
     revenue_id: int = Field(..., ge=1, description="L'ID du revenu doit être un entier positif.")

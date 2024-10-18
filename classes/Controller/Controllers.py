@@ -1,7 +1,18 @@
-from classes import Role, User, AuditLog, Budget, Category, Period, Notification, Expense, Report, KPI, Project, Revenue
-from subject import Subject
+from classes.Controller.subject import Subject
 from threading import Lock
 from abc import ABC, abstractmethod
+from classes.Role import Role 
+from classes.User import User 
+from classes.AuditLog import AuditLog 
+from classes.Budget import Budget 
+from classes.Category import Category 
+from classes.Period import Period 
+from classes.Notification import Notification 
+from classes.Expense import Expense 
+from classes.Report import Report 
+from classes.KPI import KPI 
+from classes.Project import Project 
+from classes.Revenue import Revenue 
 
 class BaseController(Subject, ABC):
     """Classe mère pour les contrôleurs avec Singleton et gestion MongoDB."""

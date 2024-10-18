@@ -1,6 +1,6 @@
 from pydantic import BaseModel, Field, validator
 from datetime import date
-from User import User
+from classes.User import User
 
 class Project(BaseModel):
     project_id: int = Field(..., ge=1, description="L'ID du projet doit être un entier positif.")
