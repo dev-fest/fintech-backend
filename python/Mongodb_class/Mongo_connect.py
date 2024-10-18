@@ -1,28 +1,19 @@
 from pymongo import MongoClient
-from pymongo.errors import ConnectionFailure
+from threading import Lock
 
 class MongoDBConnection:
+    """Singleton pour gérer la connexion MongoDB."""
     _instance = None
+    _lock = Lock()
 
-    def __new__(cls, *args, **kwargs):
-        if not cls._instance:
-            cls._instance = super(MongoDBConnection, cls).__new__(cls)
-            cls._instance.initialize(*args, **kwargs)
+    def __new__(cls, uri, db_name):
+        with cls._lock:
+            if not cls._instance:
+                cls._instance = super(MongoDBConnection, cls).__new__(cls)
+                cls._instance.client = MongoClient(uri)
+                cls._instance.db = cls._instance.client[db_name]
         return cls._instance
 
-    def initialize(self, uri, db_name):
-        try:
-            self.client = MongoClient(uri)
-            self.db = self.client[db_name]
-            # Vérifier la connexion
-            self.client.admin.command('ping')
-            print("MongoDB connection established.")
-        except ConnectionFailure as e:
-            print(f"Failed to connect to MongoDB: {e}")
-
     def get_collection(self, collection_name):
+        """Récupère une collection de la base de données."""
         return self.db[collection_name]
-
-    def close_connection(self):
-        self.client.close()
-        print("MongoDB connection closed.")
