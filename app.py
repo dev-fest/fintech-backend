@@ -18,13 +18,6 @@ report_controller = ReportController(db_connection)
 role_controller = RoleController(db_connection)
 # Ajoutez ici les autres contrôleurs si nécessaire.
 
-### CRUD POUR ROLE ###
-@app.route('/roles', methods=['POST'])
-def add_role():
-    data = request.json
-    role_controller.add(data)
-    return jsonify({"message": "Role ajouté avec succès"}), 201
-
 ### CRUD POUR REVENUE ###
 @app.route('/revenues', methods=['POST'])
 def add_revenue():
@@ -73,6 +66,30 @@ def search_reports():
     results = report_controller.search(**criteria)
     return jsonify(results), 200
 
+
+
+### CRUD POUR ROLE ###
+@app.route('/roles', methods=['POST'])
+def add_role():
+    data = request.json
+    role_controller.add(data)
+    return jsonify({"message": "Role ajouté avec succès"}), 201
+@app.route('/roles/<role_id>', methods=['DELETE'])
+def delete_role(role_id):
+    role_controller.delete(role_id)
+    return jsonify({"message": f"Role avec ID {role_id} supprimé."}), 200
+
+@app.route('/roles/<role_id>', methods=['PUT'])
+def update_role(role_id):
+    data = request.json
+    role_controller.update(role_id, data)
+    return jsonify({"message": f"Role avec ID {role_id} mis à jour."}), 200
+
+@app.route('/roles', methods=['GET'])
+def search_role():
+    criteria = request.args.to_dict()
+    results = role_controller.search(**criteria)
+    return jsonify(results), 200
 
 # D'autres routes CRUD pour les autres contrôleurs (Role, User, etc.)
 # Exemples de routes supplémentaires :
