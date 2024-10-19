@@ -1,19 +1,8 @@
 from classes.Controller.subject import Subject
 from threading import Lock
 from abc import ABC, abstractmethod
-from classes.Role import Role 
-from classes.User import User 
-from classes.AuditLog import AuditLog 
-from classes.Budget import Budget 
-from classes.Category import Category 
-from classes.Period import Period 
-from classes.Notification import Notification 
-from classes.Expense import Expense 
-from classes.Report import Report 
-from classes.KPI import KPI 
-from classes.Project import Project 
-from classes.Revenue import Revenue 
 from bson.objectid import ObjectId
+import bcrypt
 
 class BaseController(Subject, ABC):
     """Classe mère pour les contrôleurs avec Singleton et gestion MongoDB."""
@@ -37,10 +26,7 @@ class BaseController(Subject, ABC):
 
     def add(self, document):
         """Ajoute un document à la collection."""
-        if '_id' not in document:  # Assurer qu’un nouvel ID est généré
-            document['_id'] = ObjectId()
-
-        self.collection.insert_one(document)
+        self.collection.insert_many(document)
         self.notify_observers(f"{self.__class__.__name__}: ajout")
 
     def delete(self, document_id):
@@ -79,6 +65,32 @@ class UserController(BaseController):
     def __init__(self, db_connection):
         super().__init__(db_connection, "users")
 
+    def add(self, document):
+        """Ajoute un document à la collection."""
+        # Hacher le mot de passe avant de l'ajouter
+         
+        if isinstance(document, list):
+            # Si c'est une liste de documents
+            for doc in document:
+                if 'password' in doc:
+                    hashed = bcrypt.hashpw(doc['password'].encode('utf-8'), bcrypt.gensalt())
+                    doc['password_hash'] = hashed.decode('utf-8')
+                    del doc['password']
+        else:
+            # Si c'est un document unique
+            if 'password' in document:
+                hashed = bcrypt.hashpw(document['password'].encode('utf-8'), bcrypt.gensalt())
+                document['password_hash'] = hashed.decode('utf-8')
+                del document['password']
+
+        
+        if isinstance(document, list):
+            self.collection.insert_many(document)
+        else:
+            self.collection.insert_one(document)
+            
+        self.notify_observers(f"{self.__class__.__name__}: ajout")
+                              
     def search(self, **kwargs):
         users_data = self.collection.find(kwargs)
         return [
@@ -233,10 +245,16 @@ class RevenueController(BaseController):
         """Recherche des revenus selon les critères donnés."""
         revenues_data = self.collection.find(kwargs)
         return [
-            Revenue(revenue['_id'], revenue['description'], revenue['amount'], 
-                    revenue['date'], revenue['period'], revenue['created_by'])
-            for revenue in revenues_data
-        ]
+                {
+                    '_id': str(revenue['_id']),
+                    'description': revenue['description'],
+                    'amount': revenue['amount'],
+                    'date': revenue['date'],
+                    'period': revenue['period'],
+                    'created_by': revenue['created_by']
+                }
+                for revenue in revenues_data
+            ]
 
 
 class KPIController(BaseController):

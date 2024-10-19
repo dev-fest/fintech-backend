@@ -1,8 +1,7 @@
 from pydantic import BaseModel, Field, EmailStr, validator, ValidationError
 from typing import Optional
 import re
-from classes.Role import Role
-
+from Role import Role
 
 class User(BaseModel):
     user_id: int = Field(..., ge=1, description="L'ID de l'utilisateur doit être un entier positif.")
