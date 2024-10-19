@@ -13,6 +13,7 @@ from classes.Report import Report
 from classes.KPI import KPI 
 from classes.Project import Project 
 from classes.Revenue import Revenue 
+from bson.objectid import ObjectId
 
 class BaseController(Subject, ABC):
     """Classe mère pour les contrôleurs avec Singleton et gestion MongoDB."""
@@ -36,6 +37,9 @@ class BaseController(Subject, ABC):
 
     def add(self, document):
         """Ajoute un document à la collection."""
+        if '_id' not in document:  # Assurer qu’un nouvel ID est généré
+            document['_id'] = ObjectId()
+
         self.collection.insert_one(document)
         self.notify_observers(f"{self.__class__.__name__}: ajout")
 
@@ -73,7 +77,7 @@ class UserController(BaseController):
 
     def search(self, **kwargs):
         users_data = self.collection.find(kwargs)
-        return [User(user['user_id'], user['first_name'], user['last_name'], user['email'], user['password_hash'], user['role_id']) for user in users_data]
+        return [User(user['_id'], user['first_name'], user['last_name'], user['email'], user['password_hash'], user['role_id']) for user in users_data]
 
 
 class RoleController(BaseController):
@@ -82,7 +86,7 @@ class RoleController(BaseController):
 
     def search(self, **kwargs):
         roles_data = self.collection.find(kwargs)
-        return [Role(role['role_id'], role['role_name']) for role in roles_data]
+        return [Role(role['_id'], role['role_name']) for role in roles_data]
 
 
 class BudgetController(BaseController):
@@ -91,7 +95,7 @@ class BudgetController(BaseController):
 
     def search(self, **kwargs):
         budgets_data = self.collection.find(kwargs)
-        return [Budget(budget['budget_id'], budget['amount'], budget['start_date'], budget['end_date'], budget['category'], budget['project']) for budget in budgets_data]
+        return [Budget(budget['_id'], budget['amount'], budget['start_date'], budget['end_date'], budget['category'], budget['project']) for budget in budgets_data]
 
 class AuditLogController(BaseController):
     def __init__(self, db_connection):
@@ -99,7 +103,7 @@ class AuditLogController(BaseController):
 
     def search(self, **kwargs):
         logs_data = self.collection.find(kwargs)
-        return [AuditLog(log['log_id'], log['user'], log['action'], log['timestamp']) for log in logs_data]
+        return [AuditLog(log['_id'], log['user'], log['action'], log['timestamp']) for log in logs_data]
 
 
 class CategoryController(BaseController):
@@ -108,7 +112,7 @@ class CategoryController(BaseController):
 
     def search(self, **kwargs):
         categories_data = self.collection.find(kwargs)
-        return [Category(category['category_id'], category['category_name']) for category in categories_data]
+        return [Category(category['_id'], category['category_name']) for category in categories_data]
         
 
 class PeriodController(BaseController):
@@ -117,7 +121,7 @@ class PeriodController(BaseController):
 
     def search(self, **kwargs):
         periods_data = self.collection.find(kwargs)
-        return [Period(period['period_id'], period['start_date'], period['end_date']) for period in periods_data]
+        return [Period(period['_id'], period['start_date'], period['end_date']) for period in periods_data]
     
 
 class NotificationController(BaseController):
@@ -127,7 +131,7 @@ class NotificationController(BaseController):
 
     def search(self, **kwargs):
         notifications_data = self.collection.find(kwargs)
-        return [Notification(notification['notification_id'], notification['user'], notification['message'], notification['status'], notification['created_at']) for notification in notifications_data]
+        return [Notification(notification['_id'], notification['user'], notification['message'], notification['status'], notification['created_at']) for notification in notifications_data]
         
 
 class ExpenseController(BaseController):
@@ -136,7 +140,7 @@ class ExpenseController(BaseController):
 
     def search(self, **kwargs):
         expenses_data = self.collection.find(kwargs)
-        return [Expense(expense['expense_id'], expense['description'], expense['amount'], expense['date'], expense['category'], expense['project'], expense['created_by']) for expense in expenses_data]
+        return [Expense(expense['_id'], expense['description'], expense['amount'], expense['date'], expense['category'], expense['project'], expense['created_by']) for expense in expenses_data]
         
 class ReportController(BaseController):
     def __init__(self, db_connection):
@@ -146,7 +150,7 @@ class ReportController(BaseController):
         """Recherche des rapports selon les critères donnés."""
         reports_data = self.collection.find(kwargs)
         return [
-            Report(report['report_id'], report['report_type'], report['generated_at'], 
+            Report(report['_id'], report['report_type'], report['generated_at'], 
                    report['period'], report['created_by'])
             for report in reports_data
         ]
@@ -159,7 +163,7 @@ class RevenueController(BaseController):
         """Recherche des revenus selon les critères donnés."""
         revenues_data = self.collection.find(kwargs)
         return [
-            Revenue(revenue['revenue_id'], revenue['description'], revenue['amount'], 
+            Revenue(revenue['_id'], revenue['description'], revenue['amount'], 
                     revenue['date'], revenue['period'], revenue['created_by'])
             for revenue in revenues_data
         ]
@@ -171,7 +175,7 @@ class KPIController(BaseController):
 
     def search(self, **kwargs):
         kpis_data = self.collection.find(kwargs)
-        return [KPI(kpi['kpi_id'], kpi['name'], kpi['value'], kpi['date']) for kpi in kpis_data]
+        return [KPI(kpi['_id'], kpi['name'], kpi['value'], kpi['date']) for kpi in kpis_data]
 
 class ProjectController(BaseController):
     def __init__(self, db_connection):
@@ -179,4 +183,4 @@ class ProjectController(BaseController):
 
     def search(self, **kwargs):
         projects_data = self.collection.find(kwargs)
-        return  [Project(project['project_id'], project['project_name'], project['start_date'], project['end_date'], project['created_by']) for project in projects_data]
+        return  [Project(project['_id'], project['project_name'], project['start_date'], project['end_date'], project['created_by']) for project in projects_data]

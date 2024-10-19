@@ -5,13 +5,14 @@ from classes.Controller.Controllers import (
     CategoryController, PeriodController, NotificationController, ExpenseController,
     ReportController, KPIController, ProjectController, RevenueController
 )
-# Initialisation de Flask et MongoDB
+
+
 app = Flask(__name__)
 uri = "mongodb+srv://greylanisteur123:CWihvdE3IHnEV3eK@cluster0.i4xu4.mongodb.net/"
 db_name = "Cluster1"
 db_connection = MongoDBConnection(uri, db_name)
 
-# Initialisation des contrôleurs
+
 controllers = {
     "revenue": RevenueController(db_connection),
     "report": ReportController(db_connection),
@@ -26,7 +27,8 @@ controllers = {
     "kpi": KPIController(db_connection),
     "project": ProjectController(db_connection),
 }
-# Fonction générique pour CRUD
+
+
 def add_item(controller_name):
     data = request.json
     controllers[controller_name].add(data)
@@ -51,7 +53,6 @@ def get_all_items(controller_name) :
     return jsonify(results), 200
 
 
-# Routes dynamiques pour CRUD
 @app.route('/<controller_name>', methods=['POST'])
 def add(controller_name):
     return add_item(controller_name)
@@ -67,6 +68,10 @@ def update(controller_name, item_id):
 @app.route('/<controller_name>', methods=['GET'])
 def get_all(controller_name):
     return get_all_items(controller_name)
+
+@app.route('/<controller_name>/search', methods=['GET'])
+def search(controller_name):
+    return search_items(controller_name)
 
 # Exécution de l'application
 if __name__ == '__main__':
