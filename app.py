@@ -5,96 +5,69 @@ from classes.Controller.Controllers import (
     CategoryController, PeriodController, NotificationController, ExpenseController,
     ReportController, KPIController, ProjectController, RevenueController
 )
-
-# Initialisation de Flask et de MongoDB
+# Initialisation de Flask et MongoDB
 app = Flask(__name__)
 uri = "mongodb+srv://greylanisteur123:CWihvdE3IHnEV3eK@cluster0.i4xu4.mongodb.net/"
-my_db = "cluster0"
-db_connection = MongoDBConnection(uri,my_db)
+db_name = "Cluster1"
+db_connection = MongoDBConnection(uri, db_name)
 
 # Initialisation des contrôleurs
-revenue_controller = RevenueController(db_connection)
-report_controller = ReportController(db_connection)
-role_controller = RoleController(db_connection)
-# Ajoutez ici les autres contrôleurs si nécessaire.
-
-### CRUD POUR REVENUE ###
-@app.route('/revenues', methods=['POST'])
-def add_revenue():
+controllers = {
+    "revenue": RevenueController(db_connection),
+    "report": ReportController(db_connection),
+    "role": RoleController(db_connection),
+    "user": UserController(db_connection),
+    "audit": AuditLogController(db_connection),
+    "budget": BudgetController(db_connection),
+    "category": CategoryController(db_connection),
+    "period": PeriodController(db_connection),
+    "notif": NotificationController(db_connection),
+    "expense": ExpenseController(db_connection),
+    "kpi": KPIController(db_connection),
+    "project": ProjectController(db_connection),
+}
+# Fonction générique pour CRUD
+def add_item(controller_name):
     data = request.json
-    revenue_controller.add(data)
-    return jsonify({"message": "Revenu ajouté avec succès"}), 201
+    controllers[controller_name].add(data)
+    return jsonify({"message": f"{controller_name.capitalize()} ajouté avec succès"}), 201
 
-@app.route('/revenues/<revenue_id>', methods=['DELETE'])
-def delete_revenue(revenue_id):
-    revenue_controller.delete(revenue_id)
-    return jsonify({"message": f"Revenu avec ID {revenue_id} supprimé."}), 200
+def delete_item(controller_name, item_id):
+    controllers[controller_name].delete(item_id)
+    return jsonify({"message": f"{controller_name.capitalize()} avec ID {item_id} supprimé."}), 200
 
-@app.route('/revenues/<revenue_id>', methods=['PUT'])
-def update_revenue(revenue_id):
+def update_item(controller_name, item_id):
     data = request.json
-    revenue_controller.update(revenue_id, data)
-    return jsonify({"message": f"Revenu avec ID {revenue_id} mis à jour."}), 200
+    controllers[controller_name].update(item_id, data)
+    return jsonify({"message": f"{controller_name.capitalize()} avec ID {item_id} mis à jour."}), 200
 
-@app.route('/revenues', methods=['GET'])
-def search_revenues():
+def search_items(controller_name):
     criteria = request.args.to_dict()
-    results = revenue_controller.search(**criteria)
+    results = controllers[controller_name].search(**criteria)
     return jsonify(results), 200
 
-### CRUD POUR REPORT ###
-@app.route('/reports', methods=['POST'])
-def add_report():
-    data = request.json
-    report_controller.add(data)
-    return jsonify({"message": "Rapport ajouté avec succès"}), 201
-
-@app.route('/reports/<report_id>', methods=['DELETE'])
-def delete_report(report_id):
-    report_controller.delete(report_id)
-    return jsonify({"message": f"Rapport avec ID {report_id} supprimé."}), 200
-
-@app.route('/reports/<report_id>', methods=['PUT'])
-def update_report(report_id):
-    data = request.json
-    report_controller.update(report_id, data)
-    return jsonify({"message": f"Rapport avec ID {report_id} mis à jour."}), 200
-
-@app.route('/reports', methods=['GET'])
-def search_reports():
-    criteria = request.args.to_dict()
-    results = report_controller.search(**criteria)
+def get_all_items(controller_name) :
+    results = controllers[controller_name].get_all()
     return jsonify(results), 200
 
 
+# Routes dynamiques pour CRUD
+@app.route('/<controller_name>', methods=['POST'])
+def add(controller_name):
+    return add_item(controller_name)
 
-### CRUD POUR ROLE ###
-@app.route('/roles', methods=['POST'])
-def add_role():
-    data = request.json
-    role_controller.add(data)
-    return jsonify({"message": "Role ajouté avec succès"}), 201
-@app.route('/roles/<role_id>', methods=['DELETE'])
-def delete_role(role_id):
-    role_controller.delete(role_id)
-    return jsonify({"message": f"Role avec ID {role_id} supprimé."}), 200
+@app.route('/<controller_name>/<item_id>', methods=['DELETE'])
+def delete(controller_name, item_id):
+    return delete_item(controller_name, item_id)
 
-@app.route('/roles/<role_id>', methods=['PUT'])
-def update_role(role_id):
-    data = request.json
-    role_controller.update(role_id, data)
-    return jsonify({"message": f"Role avec ID {role_id} mis à jour."}), 200
+@app.route('/<controller_name>/<item_id>', methods=['PUT'])
+def update(controller_name, item_id):
+    return update_item(controller_name, item_id)
 
-@app.route('/roles', methods=['GET'])
-def search_role():
-    criteria = request.args.to_dict()
-    results = role_controller.search(**criteria)
-    return jsonify(results), 200
+@app.route('/<controller_name>', methods=['GET'])
+def get_all(controller_name):
+    return get_all_items(controller_name)
 
-# D'autres routes CRUD pour les autres contrôleurs (Role, User, etc.)
-# Exemples de routes supplémentaires :
-# - @app.route('/users', methods=['POST'])
-# - @app.route('/budgets/<budget_id>', methods=['PUT'])
-
+# Exécution de l'application
 if __name__ == '__main__':
     app.run(debug=False)

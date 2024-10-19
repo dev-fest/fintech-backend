@@ -36,7 +36,7 @@ class BaseController(Subject, ABC):
 
     def add(self, document):
         """Ajoute un document à la collection."""
-        self.collection.insert_one(document.__dict__)
+        self.collection.insert_one(document)
         self.notify_observers(f"{self.__class__.__name__}: ajout")
 
     def delete(self, document_id):
@@ -48,6 +48,17 @@ class BaseController(Subject, ABC):
         """Met à jour un document par son ID."""
         self.collection.update_one({"_id": document_id}, {"$set": updated_data})
         self.notify_observers(f"{self.__class__.__name__}: mise à jour")
+
+    def get_all(self):
+        """Récupère tous les documents de la collection."""
+        documents = self.collection.find()
+        # Convertir les ObjectId en chaînes JSON-compatibles
+        return [self._convert_object_id(doc) for doc in documents]
+    
+    def _convert_object_id(self, doc):
+        """Convertit l'ObjectId en string dans un document."""
+        doc['_id'] = str(doc['_id'])
+        return doc
 
     @abstractmethod
     def search(self, **kwargs):
@@ -62,7 +73,7 @@ class UserController(BaseController):
 
     def search(self, **kwargs):
         users_data = self.collection.find(kwargs)
-        return [User(user['user_id'], user['first_name'], user['last_name'], user['email'], user['password_hash'], user['role']) for user in users_data]
+        return [User(user['user_id'], user['first_name'], user['last_name'], user['email'], user['password_hash'], user['role_id']) for user in users_data]
 
 
 class RoleController(BaseController):
