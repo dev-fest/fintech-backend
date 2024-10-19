@@ -8,7 +8,7 @@ class User(BaseModel):
     first_name: str = Field(..., min_length=2, max_length=30, description="Le prénom doit contenir entre 2 et 30 caractères.")
     last_name: str = Field(..., min_length=2, max_length=30, description="Le nom doit contenir entre 2 et 30 caractères.")
     email: EmailStr = Field(..., description="L'email doit être valide.")
-    password_hash: str = Field(..., min_length=8, description="Le mot de passe doit contenir au moins 8 caractères.")
+    password: str = Field(..., min_length=8, description="Le mot de passe doit contenir au moins 8 caractères.")
     role: Optional[Role] = Field(..., description="Le rôle de l'utilisateur.")
 
     # Getter et Setter pour user_id
@@ -57,11 +57,11 @@ class User(BaseModel):
 
     # Getter et Setter pour password_hash
     @property
-    def get_password_hash(self) -> str:
-        return self.password_hash
+    def get_password(self) -> str:
+        return self.password
 
-    @get_password_hash.setter
-    def set_password_hash(self, value: str):
+    @get_password.setter
+    def set_password(self, value: str):
         if len(value) < 8:
             raise ValueError("Le mot de passe doit contenir au moins 8 caractères.")
         self.password_hash = value

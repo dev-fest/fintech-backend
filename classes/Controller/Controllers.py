@@ -60,7 +60,6 @@ class BaseController(Subject, ABC):
         pass
 
 
-
 class UserController(BaseController):
     def __init__(self, db_connection):
         super().__init__(db_connection, "users")
@@ -72,23 +71,17 @@ class UserController(BaseController):
         if isinstance(document, list):
             # Si c'est une liste de documents
             for doc in document:
-                if 'password' in doc:
-                    hashed = bcrypt.hashpw(doc['password'].encode('utf-8'), bcrypt.gensalt())
-                    doc['password_hash'] = hashed.decode('utf-8')
-                    del doc['password']
+                hashed = bcrypt.hashpw(doc['password'].encode('utf-8'), bcrypt.gensalt())
+                doc['password'] = hashed.decode('utf-8')
         else:
-            # Si c'est un document unique
-            if 'password' in document:
-                hashed = bcrypt.hashpw(document['password'].encode('utf-8'), bcrypt.gensalt())
-                document['password_hash'] = hashed.decode('utf-8')
-                del document['password']
-
+            hashed = bcrypt.hashpw(document['password'].encode('utf-8'), bcrypt.gensalt())
+            document['password'] = hashed.decode('utf-8')
         
         if isinstance(document, list):
             self.collection.insert_many(document)
         else:
             self.collection.insert_one(document)
-            
+
         self.notify_observers(f"{self.__class__.__name__}: ajout")
                               
     def search(self, **kwargs):
@@ -99,7 +92,7 @@ class UserController(BaseController):
             'first_name': user['first_name'],
             'last_name': user['last_name'],
             'email': user['email'],
-            'password_hash': user['password_hash'],
+            'password': user['password'],
             'role_id': str(user['role_id'])  # Assurez-vous que 'role_id' est aussi converti si c'est un ObjectId
         }
         for user in users_data
