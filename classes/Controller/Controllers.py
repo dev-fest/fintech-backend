@@ -26,7 +26,10 @@ class BaseController(Subject, ABC):
 
     def add(self, document):
         """Ajoute un document à la collection."""
-        self.collection.insert_many(document)
+        if isinstance(document, list):
+            self.collection.insert_many(document)
+        else:
+            self.collection.insert_one(document)
         self.notify_observers(f"{self.__class__.__name__}: ajout")
 
     def delete(self, document_id):
