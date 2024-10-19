@@ -1,17 +1,21 @@
-import mongoose from "mongoose";
+import mongoose from 'mongoose';
+import dotenv from 'dotenv';
+
+dotenv.config(); 
 
 mongoose.set("strictQuery", false);
-const mongoDBURL = "mongodb+srv://greylanisteur123:CWihvdE3IHnEV3eK@cluster0.i4xu4.mongodb.net/Cluster1?retryWrites=true&w=majority&appName=Cluster1";
+const mongoDBURL = process.env.mongoDbURL; 
 
 if (!mongoDBURL) {
-  throw new Error(
-    "MongoDB connection URL is not defined in environment variables."
-  );
+  throw new Error("MongoDB connection URL is not defined in environment variables.");
 }
 
 async function main() {
   try {
-    await mongoose.connect(mongoDBURL);
+    await mongoose.connect(mongoDBURL, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
     console.log("MongoDB connection established successfully!");
   } catch (err) {
     console.error("Error connecting to MongoDB:", err);
