@@ -83,10 +83,13 @@ class UserController(BaseController):
 class RoleController(BaseController):
     def __init__(self, db_connection):
         super().__init__(db_connection, "roles")
-
+    
     def search(self, **kwargs):
         roles_data = self.collection.find(kwargs)
-        return [Role(role['_id'], role['role_name']) for role in roles_data]
+        return [
+            {'_id': str(role['_id']), 'role_name': role['role_name']}
+            for role in roles_data
+        ]
 
 
 class BudgetController(BaseController):
