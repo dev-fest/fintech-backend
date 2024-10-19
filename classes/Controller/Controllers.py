@@ -45,11 +45,15 @@ class BaseController(Subject, ABC):
 
     def delete(self, document_id):
         """Supprime un document par son ID."""
+        if isinstance(document_id, str):
+            document_id = ObjectId(document_id)
         self.collection.delete_one({"_id": document_id})
         self.notify_observers(f"{self.__class__.__name__}: suppression")
 
     def update(self, document_id, updated_data):
         """Met à jour un document par son ID."""
+        if isinstance(document_id, str):
+            document_id = ObjectId(document_id)
         self.collection.update_one({"_id": document_id}, {"$set": updated_data})
         self.notify_observers(f"{self.__class__.__name__}: mise à jour")
 
