@@ -145,7 +145,7 @@ Ce backend est construit sur la base de plusieurs **design patterns** pour garan
    ```
 3. **Démarrer le serveur :**
    ```bash
-   uvicorn main:app --reload
+   gunicorn -w 4 app:app
    ```
 
 ---
