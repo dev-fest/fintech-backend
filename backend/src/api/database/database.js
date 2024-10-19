@@ -1,9 +1,7 @@
 import mongoose from "mongoose";
 
 mongoose.set("strictQuery", false);
-
-const mongoDBURL = process.env.DB_URL ;
-
+const mongoDBURL = "mongodb+srv://greylanisteur123:CWihvdE3IHnEV3eK@cluster0.i4xu4.mongodb.net/Cluster1?retryWrites=true&w=majority&appName=Cluster1";
 
 if (!mongoDBURL) {
   throw new Error(
@@ -21,4 +19,3 @@ async function main() {
 }
 
 main().catch((err) => console.log(err));
-

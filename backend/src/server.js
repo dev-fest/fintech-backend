@@ -8,10 +8,7 @@ import "./api/database/database.js";
 const PORT = process.env.PORT;
 app.use(cors());
 app.use(express.json());
-
-
 app.use('/api/v1', routes);
-
 app.listen(PORT, (error) => {
     if (!error) {
         console.log('Server is Successfully Running, and App is listening on port ' + PORT);
