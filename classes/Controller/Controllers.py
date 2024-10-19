@@ -77,7 +77,17 @@ class UserController(BaseController):
 
     def search(self, **kwargs):
         users_data = self.collection.find(kwargs)
-        return [User(user['_id'], user['first_name'], user['last_name'], user['email'], user['password_hash'], user['role_id']) for user in users_data]
+        return [
+        {
+            '_id': str(user['_id']),
+            'first_name': user['first_name'],
+            'last_name': user['last_name'],
+            'email': user['email'],
+            'password_hash': user['password_hash'],
+            'role_id': str(user['role_id'])  # Assurez-vous que 'role_id' est aussi converti si c'est un ObjectId
+        }
+        for user in users_data
+    ]
 
 
 class RoleController(BaseController):
@@ -98,7 +108,17 @@ class BudgetController(BaseController):
 
     def search(self, **kwargs):
         budgets_data = self.collection.find(kwargs)
-        return [Budget(budget['_id'], budget['amount'], budget['start_date'], budget['end_date'], budget['category'], budget['project']) for budget in budgets_data]
+        return [
+        {
+            '_id': str(budget['_id']),
+            'amount': budget['amount'],
+            'start_date': budget['start_date'],
+            'end_date': budget['end_date'],
+            'category': budget['category'],
+            'project': budget['project']
+        }
+        for budget in budgets_data
+    ]
 
 class AuditLogController(BaseController):
     def __init__(self, db_connection):
@@ -106,8 +126,16 @@ class AuditLogController(BaseController):
 
     def search(self, **kwargs):
         logs_data = self.collection.find(kwargs)
-        return [AuditLog(log['_id'], log['user'], log['action'], log['timestamp']) for log in logs_data]
-
+        return [
+        {
+            '_id': str(log['_id']),
+            'user': log['user'],
+            'action': log['action'],
+            'timestamp': log['timestamp']
+        }
+        for log in logs_data
+    ]
+        
 
 class CategoryController(BaseController):
     def __init__(self, db_connection):
@@ -115,8 +143,13 @@ class CategoryController(BaseController):
 
     def search(self, **kwargs):
         categories_data = self.collection.find(kwargs)
-        return [Category(category['_id'], category['category_name']) for category in categories_data]
-        
+        return [
+        {
+            '_id': str(category['_id']),
+            'category_name': category['category_name']
+        }
+        for category in categories_data
+    ]
 
 class PeriodController(BaseController):
     def __init__(self, db_connection):
@@ -124,8 +157,14 @@ class PeriodController(BaseController):
 
     def search(self, **kwargs):
         periods_data = self.collection.find(kwargs)
-        return [Period(period['_id'], period['start_date'], period['end_date']) for period in periods_data]
-    
+        return [
+        {
+            '_id': str(period['_id']),
+            'start_date': period['start_date'],
+            'end_date': period['end_date']
+        }
+        for period in periods_data
+    ]
 
 class NotificationController(BaseController):
     def __init__(self, db_connection):
@@ -134,8 +173,16 @@ class NotificationController(BaseController):
 
     def search(self, **kwargs):
         notifications_data = self.collection.find(kwargs)
-        return [Notification(notification['_id'], notification['user'], notification['message'], notification['status'], notification['created_at']) for notification in notifications_data]
-        
+        return [
+        {
+            '_id': str(notification['_id']),
+            'user': notification['user'],
+            'message': notification['message'],
+            'status': notification['status'],
+            'created_at': notification['created_at']
+        }
+        for notification in notifications_data
+    ]
 
 class ExpenseController(BaseController):
     def __init__(self, db_connection):
@@ -143,8 +190,19 @@ class ExpenseController(BaseController):
 
     def search(self, **kwargs):
         expenses_data = self.collection.find(kwargs)
-        return [Expense(expense['_id'], expense['description'], expense['amount'], expense['date'], expense['category'], expense['project'], expense['created_by']) for expense in expenses_data]
-        
+        return [
+        {
+            '_id': str(expense['_id']),
+            'description': expense['description'],
+            'amount': expense['amount'],
+            'date': expense['date'],
+            'category': expense['category'],
+            'project': expense['project'],
+            'created_by': expense['created_by']
+        }
+        for expense in expenses_data
+    ]
+
 class ReportController(BaseController):
     def __init__(self, db_connection):
         super().__init__(db_connection, "reports")
@@ -153,10 +211,15 @@ class ReportController(BaseController):
         """Recherche des rapports selon les critères donnés."""
         reports_data = self.collection.find(kwargs)
         return [
-            Report(report['_id'], report['report_type'], report['generated_at'], 
-                   report['period'], report['created_by'])
-            for report in reports_data
-        ]
+        {
+            '_id': str(report['_id']),
+            'report_type': report['report_type'],
+            'generated_at': report['generated_at'],
+            'period': report['period'],
+            'created_by': report['created_by']
+        }
+        for report in reports_data
+    ]
 
 class RevenueController(BaseController):
     def __init__(self, db_connection):
@@ -178,12 +241,28 @@ class KPIController(BaseController):
 
     def search(self, **kwargs):
         kpis_data = self.collection.find(kwargs)
-        return [KPI(kpi['_id'], kpi['name'], kpi['value'], kpi['date']) for kpi in kpis_data]
-
+        return [
+        {
+            '_id': str(kpi['_id']),
+            'name': kpi['name'],
+            'value': kpi['value'],
+            'date': kpi['date']
+        }
+        for kpi in kpis_data
+    ]
 class ProjectController(BaseController):
     def __init__(self, db_connection):
         super().__init__(db_connection, "projects")
 
     def search(self, **kwargs):
         projects_data = self.collection.find(kwargs)
-        return  [Project(project['_id'], project['project_name'], project['start_date'], project['end_date'], project['created_by']) for project in projects_data]
+        return [
+        {
+            '_id': str(project['_id']),
+            'project_name': project['project_name'],
+            'start_date': project['start_date'],
+            'end_date': project['end_date'],
+            'created_by': project['created_by']
+        }
+        for project in projects_data
+    ]
