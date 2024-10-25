@@ -153,18 +153,29 @@ class UserController(BaseController):
         }
         return jwt.encode(payload, REFRESH_SECRET_KEY, algorithm='HS256')
 
+
     def refresh_access_token(self, refresh_token):
         """Rafraîchit l'access token avec un refresh token valide."""
         try:
+            # Décodage du refresh token
             payload = jwt.decode(refresh_token, REFRESH_SECRET_KEY, algorithms=['HS256'])
             user_id = payload['user_id']
+            role_id = payload['role_id']
 
             # Vérifier si le refresh token est valide
-            if refresh_tokens_store.get(user_id) != refresh_token:
+            stored_token = refresh_tokens_store.get((user_id, role_id))
+            if stored_token != refresh_token:
                 return {'error': 'Refresh token invalide'}, 401
 
-            # Générer un nouveau access token
-            new_access_token = self._generate_access_token(user_id, 'admin')  # Adapter le rôle si nécessaire
+            # Générer un nouveau access token avec les informations nécessaires
+            user = self.collection.find_one({'_id': ObjectId(user_id)})
+            if not user:
+                return {'error': 'Utilisateur introuvable'}, 404
+
+            new_access_token = self._generate_access_token(
+                user['_id'], user['first_name'], user['last_name'], 
+                user['email'], user['password'], user['role_id']
+            )
             return {'access_token': new_access_token}, 200
 
         except jwt.ExpiredSignatureError:
@@ -173,10 +184,18 @@ class UserController(BaseController):
             return {'error': 'Refresh token invalide'}, 401
 
     def verify_token(self, token):
-        """Vérifie le token JWT."""
+        """Vérifie si le token JWT est valide et renvoie les informations utilisateur."""
         try:
+            # Décodage du token JWT
             payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
-            return {'valid': True, 'user_id': payload['user_id']}
+
+            # Vérifier si l'utilisateur existe toujours
+            user = self.collection.find_one({'_id': ObjectId(payload['user_id'])})
+            if not user:
+                return {'valid': False, 'error': 'Utilisateur introuvable'}
+
+            return {'valid': True, 'user_id': str(user['_id']), 'role_id': str(user['role_id'])}
+
         except jwt.ExpiredSignatureError:
             return {'valid': False, 'error': 'Token expiré'}
         except jwt.InvalidTokenError:

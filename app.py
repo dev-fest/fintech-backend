@@ -76,7 +76,7 @@ def token_required(allowed_roles):
             try:
                 # Décoder le token et récupérer le rôle
                 data = decode(token, SECRET_KEY, algorithms=['HS256'])
-                user_role = data.get('role')
+                user_role = data.get('role_id')
 
                 # Vérifier si le rôle de l'utilisateur est autorisé
                 if user_role not in allowed_roles:
@@ -96,27 +96,26 @@ def token_required(allowed_roles):
 
 
 @app.route('/<controller_name>', methods=['POST'])
-@token_required(['admin', 'editor', 'viewer'])
 def add(controller_name):
     return add_item(controller_name)
 
 @app.route('/<controller_name>/<item_id>', methods=['DELETE'])
-@token_required(['admin', 'editor', 'viewer'])
+@token_required(['admin', '671420c2df2d71de25efde15', 'viewer'])
 def delete(controller_name, item_id):
     return delete_item(controller_name, item_id)
 
 @app.route('/<controller_name>/<item_id>', methods=['PUT'])
-@token_required(['admin', 'editor', 'viewer'])
+@token_required(['admin', '671420c2df2d71de25efde15', 'viewer'])
 def update(controller_name, item_id):
     return update_item(controller_name, item_id)
 
 @app.route('/<controller_name>', methods=['GET'])
-@token_required(['admin', 'editor', 'viewer'])
+@token_required(['admin', '671420c2df2d71de25efde15', 'viewer'])
 def get_all(controller_name):
     return get_all_items(controller_name)
 
 @app.route('/<controller_name>/search', methods=['GET'])
-@token_required(['admin', 'editor', 'viewer'])
+@token_required(['admin', '671420c2df2d71de25efde15', 'viewer'])
 def search(controller_name):
     return search_items(controller_name)
 
