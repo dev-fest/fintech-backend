@@ -227,7 +227,7 @@ class BudgetController(BaseController):
             'fiscal_year': budget['fiscal_year'],
             'department': budget['department'],
             'spent_budget': budget['spent_budget'],
-            'remaining_budget': budget['remaining_budget']
+            'remaining_budget': budget['remaining_budget'],
             'description': budget['description']
         }
         for budget in budgets_data
