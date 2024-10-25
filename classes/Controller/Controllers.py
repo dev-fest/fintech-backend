@@ -1,13 +1,26 @@
+from datetime import datetime, timedelta
+import bcrypt
+import jwt
+from dotenv import load_dotenv  # Importer la fonction load_dotenv
+import os
+from bson.objectid import ObjectId
 from classes.Controller.subject import Subject
 from threading import Lock
 from abc import ABC, abstractmethod
-from bson.objectid import ObjectId
-import bcrypt
+
+# Charger les variables depuis le fichier .env
+load_dotenv()
+
+# Récupérer les clés secrètes
+SECRET_KEY = os.getenv("SECRET_KEY")
+REFRESH_SECRET_KEY = os.getenv("REFRESH_SECRET_KEY")
+
+refresh_tokens_store = {}  # Stocker les refresh tokens en mémoire (à adapter avec une base)
 
 class BaseController(Subject, ABC):
     """Classe mère pour les contrôleurs avec Singleton et gestion MongoDB."""
     _instance = None
-    _lock = Lock()  # Verrou pour multi-threading
+    _lock = Lock()
 
     def __new__(cls, db_connection, *args, **kwargs):
         """Singleton avec verrouillage."""
@@ -19,10 +32,10 @@ class BaseController(Subject, ABC):
 
     def __init__(self, db_connection, collection_name):
         """Initialise la collection MongoDB."""
-        if not hasattr(self, '_initialized'):  # Vérifie si l'instance est déjà initialisée
+        if not hasattr(self, '_initialized'):
             super().__init__()
             self.collection = db_connection.get_collection(collection_name)
-            self._initialized = True  # Marque comme initialisé
+            self._initialized = True
 
     def add(self, document):
         """Ajoute un document à la collection."""
@@ -49,17 +62,16 @@ class BaseController(Subject, ABC):
     def get_all(self):
         """Récupère tous les documents de la collection."""
         documents = self.collection.find()
-        # Convertir les ObjectId en chaînes JSON-compatibles
         return [self._convert_object_id(doc) for doc in documents]
-    
+
     def _convert_object_id(self, doc):
-        """Convertit l'ObjectId en string dans un document."""
+        """Convertit l'ObjectId en string."""
         doc['_id'] = str(doc['_id'])
         return doc
 
     @abstractmethod
     def search(self, **kwargs):
-        """Recherche dans la collection (méthode à implémenter par les classes enfants)."""
+        """Méthode de recherche à implémenter par les classes enfants."""
         pass
 
 
@@ -68,38 +80,107 @@ class UserController(BaseController):
         super().__init__(db_connection, "users")
 
     def add(self, document):
-        """Ajoute un document à la collection."""
-        # Hacher le mot de passe avant de l'ajouter
-         
+        """Ajoute un utilisateur en hachant son mot de passe."""
         if isinstance(document, list):
-            # Si c'est une liste de documents
             for doc in document:
-                hashed = bcrypt.hashpw(doc['password'].encode('utf-8'), bcrypt.gensalt())
-                doc['password'] = hashed.decode('utf-8')
+                doc['password'] = self._hash_password(doc['password'])
         else:
-            hashed = bcrypt.hashpw(document['password'].encode('utf-8'), bcrypt.gensalt())
-            document['password'] = hashed.decode('utf-8')
-        
-        if isinstance(document, list):
-            self.collection.insert_many(document)
-        else:
-            self.collection.insert_one(document)
+            document['password'] = self._hash_password(document['password'])
 
-        self.notify_observers(f"{self.__class__.__name__}: ajout")
-                              
+        super().add(document)
+
+    def _hash_password(self, password):
+        """Hache le mot de passe avec bcrypt."""
+        hashed = bcrypt.hashpw(password.encode('utf-8'), bcrypt.gensalt())
+        return hashed.decode('utf-8')
+
     def search(self, **kwargs):
         users_data = self.collection.find(kwargs)
         return [
-        {
-            '_id': str(user['_id']),
-            'first_name': user['first_name'],
-            'last_name': user['last_name'],
-            'email': user['email'],
-            'password': user['password'],
-            'role_id': str(user['role_id'])  # Assurez-vous que 'role_id' est aussi converti si c'est un ObjectId
+            {
+                '_id': str(user['_id']),
+                'first_name': user['first_name'],
+                'last_name': user['last_name'],
+                'email': user['email'],
+                'password': user['password'],
+                'role_id': str(user['role_id'])
+            }
+            for user in users_data
+        ]
+
+
+    def authenticate(self, email, password):
+        """Authentifie un utilisateur et renvoie les tokens JWT."""
+        user = self.collection.find_one({'email': email})
+
+        if user and bcrypt.checkpw(password.encode('utf-8'), user['password'].encode('utf-8')):
+            # Générer les tokens JWT
+            access_token = self._generate_access_token(user['_id'],user['first_name'],user['last_name'],user['email'],user['password'],user['role_id'])
+            refresh_token = self._generate_refresh_token(user['_id'], user['role_id'])
+
+            user['access_token'] = access_token
+            user['refresh_token'] = refresh_token
+            # Stocker le refresh token
+            refresh_tokens_store[str(user['_id']), str(user['role_id'])] = refresh_token
+            return {
+                'message': 'Connexion réussie',
+                'access_token': access_token
+                #'refresh_token': refresh_token
+            }
+
+        return {'error': 'Email ou mot de passe incorrect'}
+
+
+    def _generate_access_token(self, user_id,first_name,last_name,email,password,role_id):
+            """Génère un token JWT valide pendant 24 heure."""
+            payload = {
+                'user_id': str(user_id),
+                'first_name': str(first_name),
+                'last_name': str(last_name),
+                'email': str(email),
+                'password': str(password),
+                'role_id': str(role_id),
+                'exp': datetime.utcnow() + timedelta(hours=24)
+            }
+            return jwt.encode(payload, SECRET_KEY, algorithm='HS256')
+    
+    def _generate_refresh_token(self, user_id, role_id, expires_in=7):
+        """Génère un refresh token valide pour 7 jours."""
+        payload = {
+            'user_id': str(user_id),
+            'role_id': str(role_id),
+            'exp': datetime.utcnow() + timedelta(days=expires_in)
         }
-        for user in users_data
-    ]
+        return jwt.encode(payload, REFRESH_SECRET_KEY, algorithm='HS256')
+
+    def refresh_access_token(self, refresh_token):
+        """Rafraîchit l'access token avec un refresh token valide."""
+        try:
+            payload = jwt.decode(refresh_token, REFRESH_SECRET_KEY, algorithms=['HS256'])
+            user_id = payload['user_id']
+
+            # Vérifier si le refresh token est valide
+            if refresh_tokens_store.get(user_id) != refresh_token:
+                return {'error': 'Refresh token invalide'}, 401
+
+            # Générer un nouveau access token
+            new_access_token = self._generate_access_token(user_id, 'admin')  # Adapter le rôle si nécessaire
+            return {'access_token': new_access_token}, 200
+
+        except jwt.ExpiredSignatureError:
+            return {'error': 'Refresh token expiré'}, 401
+        except jwt.InvalidTokenError:
+            return {'error': 'Refresh token invalide'}, 401
+
+    def verify_token(self, token):
+        """Vérifie le token JWT."""
+        try:
+            payload = jwt.decode(token, SECRET_KEY, algorithms=['HS256'])
+            return {'valid': True, 'user_id': payload['user_id']}
+        except jwt.ExpiredSignatureError:
+            return {'valid': False, 'error': 'Token expiré'}
+        except jwt.InvalidTokenError:
+            return {'valid': False, 'error': 'Token invalide'}
 
 
 class RoleController(BaseController):

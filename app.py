@@ -1,15 +1,24 @@
 from flask import Flask, jsonify, request
 from Mongodb_class.Mongo_connect import MongoDBConnection
+from flask import Flask, request, jsonify
+from functools import wraps
+from jwt import decode, ExpiredSignatureError, InvalidTokenError
+from pymongo.errors import ConfigurationError
+import jwt
+from dotenv import load_dotenv
+import os
 from classes.Controller.Controllers import (
     RoleController, UserController, AuditLogController, BudgetController,
     CategoryController, PeriodController, NotificationController, ExpenseController,
     ReportController, KPIController, ProjectController, RevenueController
 )
 
-
+load_dotenv()
+SECRET_KEY =  os.getenv("SECRET_KEY")
+uri = os.getenv("uri")
+db_name = os.getenv("db_name")
 app = Flask(__name__)
-uri = "mongodb+srv://greylanisteur123:CWihvdE3IHnEV3eK@cluster0.i4xu4.mongodb.net/"
-db_name = "Cluster1"
+
 db_connection = MongoDBConnection(uri, db_name)
 
 
@@ -52,26 +61,71 @@ def get_all_items(controller_name) :
     results = controllers[controller_name].get_all()
     return jsonify(results), 200
 
+def token_required(allowed_roles):
+    def decorator(func):
+        @wraps(func)
+        def wrapper(*args, **kwargs):
+            token = None
+            # Vérifier si le token est présent dans le header Authorization
+            if 'Authorization' in request.headers:
+                token = request.headers['Authorization'].split(" ")[1]
+
+            if not token:
+                return jsonify({'error': 'Token manquant !'}), 401
+
+            try:
+                # Décoder le token et récupérer le rôle
+                data = decode(token, SECRET_KEY, algorithms=['HS256'])
+                user_role = data.get('role')
+
+                # Vérifier si le rôle de l'utilisateur est autorisé
+                if user_role not in allowed_roles:
+                    return jsonify({'error': 'Accès non autorisé !'}), 403
+
+            except ExpiredSignatureError:
+                return jsonify({'error': 'Token expiré !'}), 401
+            except InvalidTokenError:
+                return jsonify({'error': 'Token invalide !'}), 401
+
+            # Si tout est correct, exécuter la fonction de la route
+            return func(*args, **kwargs)
+
+        return wrapper
+    return decorator
+
+
 
 @app.route('/<controller_name>', methods=['POST'])
+@token_required(['admin', 'editor', 'viewer'])
 def add(controller_name):
     return add_item(controller_name)
 
 @app.route('/<controller_name>/<item_id>', methods=['DELETE'])
+@token_required(['admin', 'editor', 'viewer'])
 def delete(controller_name, item_id):
     return delete_item(controller_name, item_id)
 
 @app.route('/<controller_name>/<item_id>', methods=['PUT'])
+@token_required(['admin', 'editor', 'viewer'])
 def update(controller_name, item_id):
     return update_item(controller_name, item_id)
 
 @app.route('/<controller_name>', methods=['GET'])
+@token_required(['admin', 'editor', 'viewer'])
 def get_all(controller_name):
     return get_all_items(controller_name)
 
 @app.route('/<controller_name>/search', methods=['GET'])
+@token_required(['admin', 'editor', 'viewer'])
 def search(controller_name):
     return search_items(controller_name)
+
+
+@app.route('/login',methods=['POST'])
+def authentificate(): 
+    data = request.json
+    token = controllers['user'].authenticate(data['email'],data['password'])
+    return token
 
 # Exécution de l'application
 if __name__ == '__main__':
