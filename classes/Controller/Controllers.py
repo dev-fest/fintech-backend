@@ -1,7 +1,7 @@
 from datetime import datetime, timedelta
 import bcrypt
 import jwt
-from dotenv import load_dotenv  # Importer la fonction load_dotenv
+from dotenv import load_dotenv
 import os
 from bson.objectid import ObjectId
 from classes.Controller.subject import Subject
@@ -223,11 +223,12 @@ class BudgetController(BaseController):
         return [
         {
             '_id': str(budget['_id']),
-            'amount': budget['amount'],
-            'start_date': budget['start_date'],
-            'end_date': budget['end_date'],
-            'category': budget['category'],
-            'project': budget['project']
+            'allocated_budget': budget['allocated_budget'],
+            'fiscal_year': budget['fiscal_year'],
+            'department': budget['department'],
+            'spent_budget': budget['spent_budget'],
+            'remaining_budget': budget['remaining_budget']
+            'description': budget['description']
         }
         for budget in budgets_data
     ]
@@ -247,7 +248,24 @@ class AuditLogController(BaseController):
         }
         for log in logs_data
     ]
-        
+
+class AssetController(BaseController):
+    def __init__(self, db_connection):
+        super().__init__(db_connection, "assets")
+
+    def search(self, **kwargs):
+        assets_data = self.collection.find(kwargs)
+        return [
+        {
+            '_id': str(asset['_id']),
+            'asset_name': asset['asset_name'],
+            'asset_value': asset['asset_value'],
+            'asset_name': asset['asset_name'],
+            'date': asset['date'],
+            'description': asset['description']
+        }
+        for asset in assets_data
+    ]
 
 class CategoryController(BaseController):
     def __init__(self, db_connection):
@@ -278,6 +296,27 @@ class PeriodController(BaseController):
         for period in periods_data
     ]
 
+
+class DeptController(BaseController):
+    def __init__(self, db_connection):
+        super().__init__(db_connection, "depts")
+
+    def search(self, **kwargs):
+        depts_data = self.collection.find(kwargs)
+        return [
+        {
+            '_id': str(dept['_id']),
+            'debt_type': dept['debt_type'],
+            'principal': dept['principal'],
+            'maturity_date': dept['maturity_date'],
+            'payment_due_date': dept['payment_due_date'],
+            'amount_paid': dept['amount_paid'],
+            'outstanding_balance': dept['outstanding_balance'],
+            'description': dept['description']
+        }
+        for dept in depts_data
+    ]
+
 class NotificationController(BaseController):
     def __init__(self, db_connection):
         super().__init__(db_connection, "notifications")
@@ -306,11 +345,10 @@ class ExpenseController(BaseController):
         {
             '_id': str(expense['_id']),
             'description': expense['description'],
-            'amount': expense['amount'],
+            'amount_expenses': expense['amount_expenses'],
             'date': expense['date'],
-            'category': expense['category'],
-            'project': expense['project'],
-            'created_by': expense['created_by']
+            'expense_category': expense['expense_category'],
+            'department': expense['department']
         }
         for expense in expenses_data
     ]
@@ -344,14 +382,52 @@ class RevenueController(BaseController):
                 {
                     '_id': str(revenue['_id']),
                     'description': revenue['description'],
-                    'amount': revenue['amount'],
+                    'amount_revenue': revenue['amount_revenue'],
                     'date': revenue['date'],
-                    'period': revenue['period'],
-                    'created_by': revenue['created_by']
+                    'product_line': revenue['product_line'],
+                    'customer_type': revenue['customer_type']
                 }
                 for revenue in revenues_data
             ]
 
+
+class FundingController(BaseController):
+    def __init__(self, db_connection):
+        super().__init__(db_connection, "fundings")
+
+    def search(self, **kwargs):
+        fundings_data = self.collection.find(kwargs)
+        return [
+        {
+            '_id': str(funding['_id']),
+            'funding_round': funding['funding_round'],
+            'amount_raised': funding['amount_raised'],
+            'date': funding['date'],
+            'investor_name': funding['investor_name'],
+            'valuation': funding['valuation'],
+            'description': funding['description']
+        }
+        for funding in fundings_data
+    ]
+
+class CashController(BaseController):
+    def __init__(self, db_connection):
+        super().__init__(db_connection, "Cashs")
+
+    def search(self, **kwargs):
+        fundings_data = self.collection.find(kwargs)
+        return [
+        {
+            '_id': str(funding['_id']),
+            'cash_inflow': funding['cash_inflow'],
+            'cash_outflow': funding['cash_outflow'],
+            'date': funding['date'],
+            'net_cash_flow': funding['net_cash_flow'],
+            'category': funding['category'],
+            'description': funding['description']
+        }
+        for funding in fundings_data
+    ]
 
 class KPIController(BaseController):
     def __init__(self, db_connection):
@@ -383,4 +459,23 @@ class ProjectController(BaseController):
             'created_by': project['created_by']
         }
         for project in projects_data
+    ]
+
+class ProfitController(BaseController):
+    def __init__(self, db_connection):
+        super().__init__(db_connection, "profits")
+
+    def search(self, **kwargs):
+        profits_data = self.collection.find(kwargs)
+        return [
+        {
+            '_id': str(profit['_id']),
+            'date': profit['date'],
+            'revenue': profit['revenue'],
+            'expenses': profit['expenses'],
+            'net_profit': profit['net_profit'],
+            'profit_margin': profit['profit_margin'],
+            'description': profit['description']
+        }
+        for profit in profits_data
     ]

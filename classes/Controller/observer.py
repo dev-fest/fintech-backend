@@ -23,8 +23,8 @@ class ConcreteObserver(Observer):
 
     def __init__(self):
         """Initialisation de l'observateur."""
-        self._has_changed = False  # Variable privée pour l'état du changement
-        self._message = ""  # Dernier message reçu
+        self._has_changed = False 
+        self._message = ""  
 
     # Setter pour has_changed
     def set_has_changed(self, value: bool):
