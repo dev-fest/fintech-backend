@@ -1,14 +1,19 @@
-class Subject:
-    """Classe sujet permettant d’ajouter, retirer et notifier des observateurs."""
-    def __init__(self):
-        self._observers = []
+from abc import ABC, abstractmethod
 
+class Subject(ABC):
+    """Interface pour le sujet (observable)."""
+
+    @abstractmethod
     def add_observer(self, observer):
-        self._observers.append(observer)
+        """Ajoute un observateur."""
+        pass
 
+    @abstractmethod
     def remove_observer(self, observer):
-        self._observers.remove(observer)
+        """Supprime un observateur."""
+        pass
 
+    @abstractmethod
     def notify_observers(self, message: str):
-        for observer in self._observers:
-            observer.update(message)
+        """Notifie tous les observateurs."""
+        pass

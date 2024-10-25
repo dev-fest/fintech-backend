@@ -6,6 +6,7 @@ from jwt import decode, ExpiredSignatureError, InvalidTokenError
 from pymongo.errors import ConfigurationError
 import jwt
 from dotenv import load_dotenv
+from classes.Controller.observer import ConcreteObserver
 import os
 from classes.Controller.Controllers import (
     RoleController, UserController, AuditLogController, BudgetController,
@@ -36,6 +37,26 @@ controllers = {
     "kpi": KPIController(db_connection),
     "project": ProjectController(db_connection),
 }
+
+controllers_classes = [
+    RoleController, UserController, AuditLogController, BudgetController,
+    CategoryController, PeriodController, NotificationController, ExpenseController,
+    ReportController, KPIController, ProjectController, RevenueController
+]
+
+# Initialisation de l'observateur unique (Singleton)
+observer = ConcreteObserver()
+
+# Générer dynamiquement tous les contrôleurs et ajouter l'observateur
+controllers_instances = []
+
+for ControllerClass in controllers_classes:
+    
+    controller = ControllerClass(db_connection)
+    
+    controller.add_observer(observer)
+    
+    controllers_instances.append(controller)
 
 
 def add_item(controller_name):

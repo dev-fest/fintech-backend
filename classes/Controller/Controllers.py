@@ -3,10 +3,11 @@ import bcrypt
 import jwt
 from dotenv import load_dotenv
 import os
-from bson.objectid import ObjectId
+from bson import ObjectId
 from classes.Controller.subject import Subject
 from threading import Lock
 from abc import ABC, abstractmethod
+from classes.Controller.observer import Observer
 
 # Charger les variables depuis le fichier .env
 load_dotenv()
@@ -16,26 +17,41 @@ SECRET_KEY = os.getenv("SECRET_KEY")
 REFRESH_SECRET_KEY = os.getenv("REFRESH_SECRET_KEY")
 
 refresh_tokens_store = {}  # Stocker les refresh tokens en mémoire (à adapter avec une base)
-
 class BaseController(Subject, ABC):
-    """Classe mère pour les contrôleurs avec Singleton et gestion MongoDB."""
+    """Classe de base pour les contrôleurs avec Singleton et gestion MongoDB."""
     _instance = None
     _lock = Lock()
 
     def __new__(cls, db_connection, *args, **kwargs):
-        """Singleton avec verrouillage."""
+        """Singleton thread-safe."""
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
-                    cls._instance = super(BaseController, cls).__new__(cls)
+                    cls._instance = super().__new__(cls)
         return cls._instance
 
     def __init__(self, db_connection, collection_name):
-        """Initialise la collection MongoDB."""
+        """Initialisation du contrôleur."""
         if not hasattr(self, '_initialized'):
             super().__init__()
             self.collection = db_connection.get_collection(collection_name)
+            self._observers = []  # Liste des observateurs
             self._initialized = True
+
+    def add_observer(self, observer: Observer):
+        """Ajoute un observateur."""
+        if observer not in self._observers:
+            self._observers.append(observer)
+
+    def remove_observer(self, observer: Observer):
+        """Supprime un observateur."""
+        if observer in self._observers:
+            self._observers.remove(observer)
+
+    def notify_observers(self, message: str):
+        """Notifie tous les observateurs."""
+        for observer in self._observers:
+            observer.update(message)
 
     def add(self, document):
         """Ajoute un document à la collection."""
@@ -43,21 +59,21 @@ class BaseController(Subject, ABC):
             self.collection.insert_many(document)
         else:
             self.collection.insert_one(document)
-        self.notify_observers(f"{self.__class__.__name__}: ajout")
+        self.notify_observers(f"{self.__class__.__name__}: ajout effectué.")
 
     def delete(self, document_id):
         """Supprime un document par son ID."""
         if isinstance(document_id, str):
             document_id = ObjectId(document_id)
         self.collection.delete_one({"_id": document_id})
-        self.notify_observers(f"{self.__class__.__name__}: suppression")
+        self.notify_observers(f"{self.__class__.__name__}: suppression effectuée.")
 
     def update(self, document_id, updated_data):
         """Met à jour un document par son ID."""
         if isinstance(document_id, str):
             document_id = ObjectId(document_id)
         self.collection.update_one({"_id": document_id}, {"$set": updated_data})
-        self.notify_observers(f"{self.__class__.__name__}: mise à jour")
+        self.notify_observers(f"{self.__class__.__name__}: mise à jour effectuée.")
 
     def get_all(self):
         """Récupère tous les documents de la collection."""
