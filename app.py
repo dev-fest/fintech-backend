@@ -12,12 +12,14 @@ from classes.Controller.Controllers import (
     CategoryController, PeriodController, NotificationController, ExpenseController,
     ReportController, KPIController, ProjectController, RevenueController
 )
+from flask_cors import CORS
 
 load_dotenv()
 SECRET_KEY =  os.getenv("SECRET_KEY")
 uri = os.getenv("uri")
 db_name = os.getenv("db_name")
 app = Flask(__name__)
+CORS(app)
 
 db_connection = MongoDBConnection(uri, db_name)
 
