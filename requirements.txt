@@ -9,4 +9,4 @@ bcrypt
 PyJWT
 python-dotenv
 openai==0.28
-CORS
+flask_cors
