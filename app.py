@@ -6,7 +6,9 @@ from jwt import decode, ExpiredSignatureError, InvalidTokenError
 from pymongo.errors import ConfigurationError
 import jwt
 from dotenv import load_dotenv
+import openai
 from classes.Controller.observer import ConcreteObserver
+from classes.Controller.GenerateRepport import LLMReportGenerator
 import os
 from classes.Controller.Controllers import (
     RoleController, UserController, AuditLogController, BudgetController,
@@ -18,6 +20,14 @@ load_dotenv()
 SECRET_KEY =  os.getenv("SECRET_KEY")
 uri = os.getenv("uri")
 db_name = os.getenv("db_name")
+
+# Charger les variables depuis le fichier .env
+load_dotenv()
+
+# Récupérer les clés secrètes
+API_KEYS_Generative = os.getenv("API_KEYS_Generative")
+
+
 app = Flask(__name__)
 
 db_connection = MongoDBConnection(uri, db_name)
@@ -146,6 +156,25 @@ def authentificate():
     data = request.json
     token = controllers['user'].authenticate(data['email'],data['password'])
     return token
+
+
+@app.route('/generate',methods=['POST'])
+def generate():
+    generateur = LLMReportGenerator(API_KEYS_Generative)
+
+    # Exemple de données d’actualité
+    donnees = {
+        "Ventes Q3": 12500,
+        "Croissance": "5% par rapport au trimestre précédent",
+        "Produit le plus vendu": "Laptop XYZ",
+        "Commentaire": "Augmentation des ventes pendant les soldes"
+    }
+
+    titre = "Rapport sur les performances du troisième trimestre"
+    rapport = generateur.generer_rapport(donnees, titre)
+    return jsonify(rapport), 200
+
+
 
 # Exécution de l'application
 if __name__ == '__main__':
