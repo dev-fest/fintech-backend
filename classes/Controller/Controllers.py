@@ -264,7 +264,7 @@ class AuditLogController(BaseController):
         }
         for log in logs_data
     ]
-    
+
 class AssetController(BaseController):
     def __init__(self, db_connection):
         super().__init__(db_connection, "assets")

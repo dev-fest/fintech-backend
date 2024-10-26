@@ -13,7 +13,7 @@ import os
 from classes.Controller.Controllers import (
     RoleController, UserController, AuditLogController, BudgetController,
     CategoryController, PeriodController, NotificationController, ExpenseController,
-    ReportController, KPIController, ProjectController, RevenueController
+    ReportController, KPIController, ProjectController, RevenueController,AssetController,ProfitController,CashController,FundingController,DeptController
 )
 
 load_dotenv()
@@ -46,6 +46,11 @@ controllers = {
     "expense": ExpenseController(db_connection),
     "kpi": KPIController(db_connection),
     "project": ProjectController(db_connection),
+    "asset":AssetController(db_connection),
+    "profit":ProfitController(db_connection),
+    "cash":CashController(db_connection),
+    "funding":FundingController(db_connection),
+    "dept":DeptController(db_connection)
 }
 
 controllers_classes = [

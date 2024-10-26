@@ -1,0 +1,91 @@
+[
+    {
+      "id": 1,
+      "debt_type": "loan",
+      "principal": 50000,
+      "interest_rate": 0.05,
+      "maturity_date": "2025-12-31",
+      "payment_due_date": "2024-12-01",
+      "amount_paid": 10000,
+      "outstanding_balance": 40000,
+      "description": "Bank loan for equipment purchase"
+    },
+    {
+      "id": 2,
+      "debt_type": "bond",
+      "principal": 30000,
+      "interest_rate": 0.03,
+      "maturity_date": "2026-12-31",
+      "payment_due_date": "2024-11-15",
+      "amount_paid": 5000,
+      "outstanding_balance": 25000,
+      "description": "Corporate bond issued in 2024"
+    },
+    {
+      "id": 3,
+      "debt_type": "mortgage",
+      "principal": 200000,
+      "interest_rate": 0.04,
+      "maturity_date": "2035-01-01",
+      "payment_due_date": "2024-12-20",
+      "amount_paid": 15000,
+      "outstanding_balance": 185000,
+      "description": "Mortgage for office building"
+    },
+    {
+      "id": 4,
+      "debt_type": "credit line",
+      "principal": 10000,
+      "interest_rate": 0.06,
+      "maturity_date": "2025-06-30",
+      "payment_due_date": "2024-10-15",
+      "amount_paid": 2000,
+      "outstanding_balance": 8000,
+      "description": "Credit line for operational expenses"
+    },
+    {
+      "id": 5,
+      "debt_type": "loan",
+      "principal": 80000,
+      "interest_rate": 0.045,
+      "maturity_date": "2027-06-30",
+      "payment_due_date": "2024-12-10",
+      "amount_paid": 12000,
+      "outstanding_balance": 68000,
+      "description": "Loan for company expansion"
+    },
+    {
+      "id": 6,
+      "debt_type": "bond",
+      "principal": 50000,
+      "interest_rate": 0.025,
+      "maturity_date": "2026-09-15",
+      "payment_due_date": "2024-11-30",
+      "amount_paid": 7000,
+      "outstanding_balance": 43000,
+      "description": "Government bond issued in 2023"
+    },
+    {
+      "id": 7,
+      "debt_type": "loan",
+      "principal": 25000,
+      "interest_rate": 0.06,
+      "maturity_date": "2028-03-31",
+      "payment_due_date": "2024-12-05",
+      "amount_paid": 5000,
+      "outstanding_balance": 20000,
+      "description": "Short-term loan for working capital"
+    },
+    {
+      "id": 8,
+      "debt_type": "credit line",
+      "principal": 15000,
+      "interest_rate": 0.055,
+      "maturity_date": "2025-12-31",
+      "payment_due_date": "2024-11-25",
+      "amount_paid": 3000,
+      "outstanding_balance": 12000,
+      "description": "Extended credit line for seasonal operations"
+    }
+  ]
+  

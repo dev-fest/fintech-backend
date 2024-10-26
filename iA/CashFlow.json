@@ -1,0 +1,101 @@
+[
+    {
+        "id": 1,
+        "date": "2024-09-01",
+        "cash_inflow": 50000,
+        "cash_outflow": 20000,
+        "net_cash_flow": 30000,
+        "description": "Monthly revenue and operational costs",
+        "category": "operational"
+    },
+    {
+        "id": 2,
+        "date": "2024-09-08",
+        "cash_inflow": 20000,
+        "cash_outflow": 15000,
+        "net_cash_flow": 5000,
+        "description": "Product sales and marketing expense",
+        "category": "operational"
+    },
+    {
+        "id": 3,
+        "date": "2024-09-15",
+        "cash_inflow": 30000,
+        "cash_outflow": 18000,
+        "net_cash_flow": 12000,
+        "description": "Sales and office rent",
+        "category": "operational"
+    },
+    {
+        "id": 4,
+        "date": "2024-09-22",
+        "cash_inflow": 45000,
+        "cash_outflow": 10000,
+        "net_cash_flow": 35000,
+        "description": "Consulting services and inventory purchase",
+        "category": "investment"
+    },
+    {
+        "id": 5,
+        "date": "2024-09-30",
+        "cash_inflow": 35000,
+        "cash_outflow": 22000,
+        "net_cash_flow": 13000,
+        "description": "Monthly closing, salary payments",
+        "category": "operational"
+    },
+    {
+        "id": 6,
+        "date": "2024-08-01",
+        "cash_inflow": 60000,
+        "cash_outflow": 25000,
+        "net_cash_flow": 35000,
+        "description": "August sales and operational costs",
+        "category": "operational"
+    },
+    {
+        "id": 7,
+        "date": "2024-08-15",
+        "cash_inflow": 40000,
+        "cash_outflow": 15000,
+        "net_cash_flow": 25000,
+        "description": "Product launch revenue and expenses",
+        "category": "operational"
+    },
+    {
+        "id": 8,
+        "date": "2024-08-30",
+        "cash_inflow": 30000,
+        "cash_outflow": 12000,
+        "net_cash_flow": 18000,
+        "description": "End of month review and expenses",
+        "category": "operational"
+    },
+    {
+        "id": 9,
+        "date": "2024-07-01",
+        "cash_inflow": 55000,
+        "cash_outflow": 20000,
+        "net_cash_flow": 35000,
+        "description": "July revenue and operational costs",
+        "category": "operational"
+    },
+    {
+        "id": 10,
+        "date": "2024-07-15",
+        "cash_inflow": 45000,
+        "cash_outflow": 17000,
+        "net_cash_flow": 28000,
+        "description": "Sales and marketing expenses",
+        "category": "operational"
+    },
+    {
+        "id": 11,
+        "date": "2024-10-20",
+        "cash_inflow": 45000,
+        "cash_outflow": 23000,
+        "net_cash_flow": 22000,
+        "description": "Sales and marketing expenses",
+        "category": "operational"
+    }
+]

@@ -1,0 +1,82 @@
+[
+    {
+        "id": 1,
+        "date": "2024-09-01",
+        "amount_revenue": 40000,
+        "product_line": "Product A",
+        "customer_type": "new",
+        "description": "Sales of Product A to new customers"
+    },
+    {
+        "id": 2,
+        "date": "2024-09-08",
+        "amount_revenue": 20000,
+        "product_line": "Product B",
+        "customer_type": "returning",
+        "description": "Sales of Product B to returning customers"
+    },
+    {
+        "id": 3,
+        "date": "2024-09-15",
+        "amount_revenue": 30000,
+        "product_line": "Product C",
+        "customer_type": "new",
+        "description": "Launch sales of Product C"
+    },
+    {
+        "id": 4,
+        "date": "2024-09-22",
+        "amount_revenue": 15000,
+        "product_line": "Service A",
+        "customer_type": "new",
+        "description": "Consulting services for new clients"
+    },
+    {
+        "id": 5,
+        "date": "2024-09-30",
+        "amount_revenue": 25000,
+        "product_line": "Product A",
+        "customer_type": "returning",
+        "description": "Sales of Product A to returning customers"
+    },
+    {
+        "id": 6,
+        "date": "2024-08-01",
+        "amount_revenue": 60000,
+        "product_line": "Product D",
+        "customer_type": "new",
+        "description": "Sales of Product D to new customers"
+    },
+    {
+        "id": 7,
+        "date": "2024-08-15",
+        "amount_revenue": 45000,
+        "product_line": "Service B",
+        "customer_type": "returning",
+        "description": "Recurring services for returning clients"
+    },
+    {
+        "id": 8,
+        "date": "2024-08-30",
+        "amount_revenue": 50000,
+        "product_line": "Product E",
+        "customer_type": "new",
+        "description": "Sales of Product E during promotion"
+    },
+    {
+        "id": 9,
+        "date": "2024-07-01",
+        "amount_revenue": 55000,
+        "product_line": "Product F",
+        "customer_type": "new",
+        "description": "Sales of Product F to new customers"
+    },
+    {
+        "id": 10,
+        "date": "2024-07-15",
+        "amount_revenue": 40000,
+        "product_line": "Product G",
+        "customer_type": "returning",
+        "description": "Sales of Product G to returning customers"
+    }
+]
