@@ -495,3 +495,23 @@ class ProfitController(BaseController):
         }
         for profit in profits_data
     ]
+
+class InvestController(BaseController):
+    def __init__(self, db_connection):
+        super().__init__(db_connection, "invests")
+
+    def search(self, **kwargs):
+        invests_data = self.collection.find(kwargs)
+        return [
+        {
+            '_id': str(invest['_id']),
+            'date': invest['date'],
+            'investment_type': invest['investment_type'],
+            'investment_amount': invest['investment_amount'],
+            'returns': invest['returns'],
+            'risk_level': invest['risk_level'],
+            'current_value': invest['current_value'],
+            'description': invest['description']
+        }
+        for invest in invests_data
+    ]

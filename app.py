@@ -13,7 +13,7 @@ from flask_cors import CORS
 import os
 from classes.Controller.Controllers import (
     RoleController, UserController, AuditLogController, BudgetController,
-    CategoryController, PeriodController, NotificationController, ExpenseController,
+    CategoryController, PeriodController, NotificationController, ExpenseController,InvestController,
     ReportController, KPIController, ProjectController, RevenueController,AssetController,ProfitController,CashController,FundingController,DeptController
 )
 
@@ -51,13 +51,15 @@ controllers = {
     "profit":ProfitController(db_connection),
     "cash":CashController(db_connection),
     "funding":FundingController(db_connection),
-    "dept":DeptController(db_connection)
+    "dept":DeptController(db_connection),
+    "invest":InvestController(db_connection)
 }
 
 controllers_classes = [
     RoleController, UserController, AuditLogController, BudgetController,
-    CategoryController, PeriodController, NotificationController, ExpenseController,
-    ReportController, KPIController, ProjectController, RevenueController
+    CategoryController, PeriodController, NotificationController, ExpenseController,InvestController,
+    ReportController, KPIController, ProjectController, RevenueController,AssetController,
+    ProfitController,CashController,FundingController,DeptController
 ]
 
 # Initialisation de l'observateur unique (Singleton)
