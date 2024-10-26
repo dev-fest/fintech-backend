@@ -9,6 +9,7 @@ from dotenv import load_dotenv
 import openai
 from classes.Controller.observer import ConcreteObserver
 from classes.Controller.GenerateRepport import LLMReportGenerator
+from flask_cors import CORS
 import os
 from classes.Controller.Controllers import (
     RoleController, UserController, AuditLogController, BudgetController,
@@ -29,7 +30,7 @@ API_KEYS_Generative = os.getenv("API_KEYS_Generative")
 
 
 app = Flask(__name__)
-
+CORS(app)
 db_connection = MongoDBConnection(uri, db_name)
 
 
